@@ -125,6 +125,22 @@ def recommend_portfolio(intent_request):
     source = intent_request["invocationSource"]
 
     # YOUR CODE GOES HERE!
+    if source == "DialogCodeHook":
+        slots = get_slots(intent_request)
+        validation_result = data_validation(intent_request, age, investment_amount)
+
+        if not validation_result["isValid"]:
+            slots[validation_result["violatedSlot"]] = None
+            return elicit_slot(
+                intent_request["sessionAttributes"],
+                intent_request["currentIntent"]["name"],
+                slots,
+                validation_result["violatedSlot"],
+                validation_result["message"],
+            )
+
+        output_session_attributes = intent_request["sessionAttributes"]
+        return delegate(output_session_attributes, get_slots(intent_request))
 
 
 ### Intents Dispatcher ###
